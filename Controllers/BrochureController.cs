@@ -19,7 +19,7 @@ namespace brochureapi.Controllers
         private readonly ILogger<BrochureController> _logger;
         private readonly IBrochureRepository _repository;
        
-        // depenndcy injection to bring in an  ILogger for logging and  an ibrochurerepo to access the data 
+        // dependency injection to bring in an  ILogger for logging and  an ibrochurerepo to access the data 
         public BrochureController(IBrochureRepository repository, ILogger<BrochureController> logger)
         {
             _repository = repository;
@@ -61,13 +61,13 @@ namespace brochureapi.Controllers
         // ActionResult<Brochure> is used to specify the typre of data that the method is expected to return
         public ActionResult<Brochure> GetById(int id)
         {
-            var brochure = _repository.GetBrochureById(id); // the object  brrochure
-            if (brochure == null) return NotFound(); // if not found eturns notfound
+            var brochure = _repository.GetBrochureById(id); // the object  brochure
+            if (brochure == null) return NotFound(); // if not found returns notfound
             return Ok(brochure); //else returns ok which returns succes code with json body reposnse
         }
     
         [HttpGet(Name = "GetBrochure")]
-        // making   ssure it returns a list of brochures 
+        // making   sure it returns a list of brochures 
         public ActionResult<IEnumerable<Brochure>> Get()
         {
             var brochures = _repository.GetBrochures();
@@ -75,23 +75,10 @@ namespace brochureapi.Controllers
             return Ok(brochures);
         }
         [HttpGet("filter")]
-        public ActionResult<IEnumerable<Brochure>> Getbyfilter(String InputName)
+        public ActionResult<IEnumerable<Brochure>> GetByFilter(string inputName)
         {
-            var brochures = _repository.GetBrochures(); // Use actual data source to get all the brochures
-            if (brochures == null || !brochures.Any()) //checks if the  empty of null
-            {
-                return NotFound("No brochures found.");
-            }
-            // Filter brochures by name (case-insensitive contains match)
-            //filters them by says in the list aceess each object name andif its not null and contains the inputNmae the user enter then its filterd
-            var filtered = brochures
-                .Where(b => b.Name != null && b.Name.Contains(InputName, StringComparison.OrdinalIgnoreCase))
-                .ToList(); //to list is need becuase the result is  an <IEnumberableBrochure> to list forces the result into a filtered list
+            var filtered = _repository.GetByFilter(inputName);
 
-            if (!filtered.Any())//if the filter is empty no brochures are founds ur meet a not found reposnse
-            {
-                return NotFound($"No brochures found containing '{InputName}'.");
-            }
 
             return Ok(filtered);
         }

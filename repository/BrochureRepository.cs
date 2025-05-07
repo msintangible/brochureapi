@@ -1,6 +1,7 @@
 ﻿using brochureapi.EFCoreInMemoryDbDemo;
 using brochureapi.Models;
 using Microsoft.EntityFrameworkCore;
+using Xunit.Sdk;
 
 namespace brochureapi.repository
 {
@@ -41,6 +42,14 @@ namespace brochureapi.repository
                 _context.Brochures.Remove(brochure);
                 _context.SaveChanges(); // Commits the delete
             }
+        }
+
+
+        public List<Brochure> GetByFilter(String  input)
+        {
+            return _context.Brochures
+                .Where(b => b.Name.Contains(input, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
 
     }
