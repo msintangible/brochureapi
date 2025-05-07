@@ -10,6 +10,8 @@ namespace brochureapi.repository
         public Brochure GetBrochureById(int id);
         public void DeleteBrochure(int id);
         public void UpdateBrochure(Brochure brochure);
-        public List<Brochure> GetByFilter( string id); 
+        public List<Brochure> GetByFilter( string id);
+
+        public List<Page> GetAllPages(int id);
     }
 }

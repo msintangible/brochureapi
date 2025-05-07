@@ -91,6 +91,12 @@ namespace brochureapi.Controllers
             _repository.DeleteBrochure(id);
             return NoContent(); ;
         }
+        [HttpGet("Brochure/{id}/Pages")]
+        public ActionResult<IEnumerable<Page>> GetPages(int BrochureId) {
+            var pages = _repository.GetAllPages(BrochureId);
+            
+            return Ok(pages);
+        }
 
 
 

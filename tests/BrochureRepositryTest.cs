@@ -114,5 +114,57 @@ namespace brochureapi.tests
             // Assert
             Assert.Equal("Updated Name", updated.Name);
         }
+        [Fact]
+        public void DeleteBrochureTest()
+        {
+            //Arrange
+            using var context = CreateContext();
+            var repo = new BrochureRepository(context);
+            var brochure = new Brochure(22, "Old Name", DateOnly.FromDateTime(DateTime.Today));
+            repo.AddBrochure(brochure);
+            
+            Assert.NotNull(repo.GetBrochureById(22));
+            // Act
+            repo.DeleteBrochure(22);
+            Assert.Null(repo.GetBrochureById(22));
+        }
+
+        [Fact]
+        public void GetAllPagesFromBrochureTest() {
+            //Arrange
+            using var context = CreateContext();
+            var repo = new BrochureRepository(context);
+            var brochure = new Brochure(22, "Old Name", DateOnly.FromDateTime(DateTime.Today));
+            repo.AddBrochure(brochure);
+
+            var result = repo.GetAllPages(22);
+
+            Assert.NotNull(result);
+
+        }
+        [Fact]
+        public void AddGetPagesTest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var repo = new BrochureRepository(context);
+            var brochure = new Brochure { Id = 1, Name = "Test Brochure" };
+            repo.AddBrochure(brochure);
+
+            // Add pages to brochure
+            var page1 = new Page { Name = "Page 1" };
+            var page2 = new Page { Name = "Page 2" };
+            repo.AddPage(1, page1);
+            repo.AddPage(1, page2);
+
+            // Act
+            var result = repo.GetAllPages(1);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.Contains(result, p => p.Name == "Page 1");
+            Assert.Contains(result, p => p.Name == "Page 2");
+        }
     }
 }

@@ -13,10 +13,12 @@ namespace brochureapi.repository
         {
             _context = context;
         }
-        public List<Brochure> GetBrochures() {
-            
-                return _context.Brochures.ToList();
-            }
+        public List<Brochure> GetBrochures()
+        {
+            return _context.Brochures
+                .Include(b => b.Pages) // This loads related pages
+                .ToList();
+        }
         public void AddBrochure(Brochure brochure)
         {
             
@@ -25,8 +27,9 @@ namespace brochureapi.repository
         }
         public Brochure GetBrochureById(int id)
         {
-            
-            return _context.Brochures.Find(id);
+            return _context.Brochures
+                .Include(b => b.Pages)
+                .FirstOrDefault(b => b.Id == id);
         }
 
         public void UpdateBrochure(Brochure brochure) {
@@ -50,6 +53,20 @@ namespace brochureapi.repository
             return _context.Brochures
                 .Where(b => b.Name.Contains(input, StringComparison.OrdinalIgnoreCase))
                 .ToList();
+        }
+
+        public List<Page> GetAllPages(int id) {
+            //Acces the pages set and where the pages id match the id of the brochure return all the pages
+            return _context.Pages.Where(p => p.BrochureId == id).ToList();
+        }
+
+        public void AddPage(int id,Page page) {
+
+            _context.Brochures.Find(id);
+            // Set the foreign key on the page
+            page.BrochureId = id;
+            _context.Pages.Add(page);
+            _context.SaveChanges();
         }
 
     }

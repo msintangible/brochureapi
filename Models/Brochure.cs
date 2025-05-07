@@ -15,6 +15,6 @@ namespace brochureapi.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public DateOnly Datetime {get;set;}
-
+        public ICollection<Page> Pages { get; set; }
     }
 }
