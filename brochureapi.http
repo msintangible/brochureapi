@@ -1,0 +1,6 @@
+@brochureapi_HostAddress = http://localhost:5174
+
+GET {{brochureapi_HostAddress}}/brochure/
+Accept: application/json
+
+###
