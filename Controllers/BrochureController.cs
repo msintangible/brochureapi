@@ -5,6 +5,7 @@ using brochureapi.Models;
 using brochureapi.repository;
 using Microsoft.AspNetCore.Mvc;// controller and roting supporter
 using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace brochureapi.Controllers
 {
@@ -25,8 +26,11 @@ namespace brochureapi.Controllers
             _repository = repository;
             _logger = logger;
         }
-        //once the controller class is called a logger is created to log errors and repo is created to acess the brochure data
+
        
+
+        //once the controller class is called a logger is created to log errors and repo is created to acess the brochure data
+
 
         [HttpPost] // web request sumbits an enity (brochure) 
        //action result is a return type  that allwos 200 ok 404 and 201 or return a data object
@@ -59,7 +63,7 @@ namespace brochureapi.Controllers
         [HttpGet("{id}")] 
         // requests a represnatation of the specified resources  only used to request data
         // ActionResult<Brochure> is used to specify the typre of data that the method is expected to return
-        public ActionResult<Brochure> GetById(int id)
+        public ActionResult<Brochure> GetById([FromRoute]int id)
         {
             var brochure = _repository.GetBrochureById(id); // the object  brochure
             if (brochure == null) return NotFound(); // if not found returns notfound
@@ -75,7 +79,7 @@ namespace brochureapi.Controllers
             return Ok(brochures);
         }
         [HttpGet("filter")]
-        public ActionResult<IEnumerable<Brochure>> GetByFilter(string inputName)
+        public ActionResult<IEnumerable<Brochure>> GetByFilter([FromQuery]string inputName)
         {
             var filtered = _repository.GetByFilter(inputName);
 
@@ -92,12 +96,7 @@ namespace brochureapi.Controllers
             return NoContent(); 
         }
 
-        [HttpGet("Pages")]
-        public ActionResult<List<Page>> GetPages(int BrochureId) {
-            var pages = _repository.GetAllPages(BrochureId);
-            
-            return Ok(pages);
-        }
+    
 
 
 

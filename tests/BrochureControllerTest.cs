@@ -89,26 +89,8 @@ namespace brochureapi.tests
             // Assert
             Assert.NotNull(_controller.Get());
         }
-        [Fact]
-        public void GetPagesTest() {
-            // Arrange
-            var pages = new List<Page>
-        {
-            new Page { Id = 1, Name = "Page 1", BrochureId = 77 },
-            new Page { Id = 2, Name = "Page 2", BrochureId = 77 }
-        };
-            var brochureId = 77;
-            var brochure = new Brochure(brochureId, "Test Brochure", DateOnly.FromDateTime(DateTime.Today),pages);
-
-
-            _controller.Create(brochure);
-
-            var result = _controller.GetPages(77);
-            var okResult = Assert.IsType<OkObjectResult>(result.Result); // Check if the result is Ok
-           
-            Assert.NotNull(result); // Check that 2 pages are returned
-        }
-
+       
+        
 
 
     }

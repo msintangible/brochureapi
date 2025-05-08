@@ -13,7 +13,7 @@ namespace brochureapi.Models
             this.Id = bId;
             this.Name = bName;
             this.Datetime = dateOnly;
-            Pages = pages;
+            this.Pages = pages;
         }
         public Brochure(int bId, string bName, DateOnly dateOnly) : this()
         {
