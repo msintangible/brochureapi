@@ -89,10 +89,11 @@ namespace brochureapi.Controllers
             if (brochure == null) return NotFound($"Brochure with ID {id} not found.");
 
             _repository.DeleteBrochure(id);
-            return NoContent(); ;
+            return NoContent(); 
         }
-        [HttpGet("Brochure/{id}/Pages")]
-        public ActionResult<IEnumerable<Page>> GetPages(int BrochureId) {
+
+        [HttpGet("Pages")]
+        public ActionResult<List<Page>> GetPages(int BrochureId) {
             var pages = _repository.GetAllPages(BrochureId);
             
             return Ok(pages);

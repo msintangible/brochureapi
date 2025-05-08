@@ -12,6 +12,8 @@ namespace brochureapi.Models
         public int Id { get; set; } // primaray key
         public string Name { get; set; }
         public int BrochureId { get; set; }//foregin key
+
+
         [JsonIgnore]
         public Brochure? Brochure { get; set; }  //links back to a brochure 
 

@@ -55,11 +55,11 @@ namespace brochureapi.repository
                 .ToList();
         }
 
-        public List<Page> GetAllPages(int id) {
+        public List<Page> GetAllPages(int Id) {
             //Acces the pages set and where the pages id match the id of the brochure return all the pages
-            return _context.Pages.Where(p => p.BrochureId == id).ToList();
+            return _context.Pages.Where(p => p.BrochureId == Id).ToList();
         }
-
+         
         public void AddPage(int id,Page page) {
 
             _context.Brochures.Find(id);

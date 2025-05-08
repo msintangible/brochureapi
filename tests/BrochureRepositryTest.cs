@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using brochureapi.EFCoreInMemoryDbDemo;
 using brochureapi.Models;
 using brochureapi.repository;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -140,6 +142,7 @@ namespace brochureapi.tests
             var result = repo.GetAllPages(22);
 
             Assert.NotNull(result);
+            result.Should().BeOfType<List<Page>>();
 
         }
         [Fact]
