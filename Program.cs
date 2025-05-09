@@ -11,8 +11,6 @@ builder.Logging.AddConsole();
 builder.Services.AddDbContext<ApiContext>(options =>
     options.UseInMemoryDatabase("brochureDb"));
 
-// Register Brochure Repository
-builder.Services.AddScoped<IBrochureRepository, BrochureRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
