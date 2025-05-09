@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using brochureapi.Models;
-using brochureapi.repository;
+using brochureapi.NewFolder;
+using brochureapi.services;
 using Microsoft.AspNetCore.Mvc;// controller and roting supporter
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -18,13 +20,15 @@ namespace brochureapi.Controllers
 
         
         private readonly ILogger<BrochureController> _logger;
-        private readonly IBrochureRepository _repository;
-       
+        private readonly IBrochureService _service;
+        
+
         // dependency injection to bring in an  ILogger for logging and  an ibrochurerepo to access the data 
-        public BrochureController(IBrochureRepository repository, ILogger<BrochureController> logger)
+        public BrochureController(IBrochureService service, ILogger<BrochureController> logger)
         {
-            _repository = repository;
+            _service = service;
             _logger = logger;
+          
         }
 
        
@@ -34,7 +38,7 @@ namespace brochureapi.Controllers
 
         [HttpPost] // web request sumbits an enity (brochure) 
        //action result is a return type  that allwos 200 ok 404 and 201 or return a data object
-        public ActionResult Create(Brochure brochure)
+        public ActionResult Create(BrochureDTO brochure)
         {
             // Validate if brochure is not null
             if (brochure == null)
@@ -43,18 +47,18 @@ namespace brochureapi.Controllers
             }
 
             // Add brochure to repository
-            _repository.AddBrochure(brochure);
+            _service.AddBrochure(brochure);
 
             // Return HTTP 201 (Created) and the new brochure details
             return CreatedAtAction(nameof(GetById), new { id = brochure.Id }, brochure);
         }
         [HttpPut("{id}")] //the put method replaces a all current represantions of target resource
-        public ActionResult Update(int id,Brochure brochure) {
+        public ActionResult Update(int id,BrochureDTO brochure) {
             if (brochure == null ) {
                 return BadRequest("Brochure data is required.");
             }
             brochure.Id = id; //sets id from the urs so the id you want to update and  the data u would to update
-            _repository.UpdateBrochure(brochure); //update the brochure once it get the brochure
+            _service.UpdateBrochure(brochure); //update the brochure once it get the brochure
            
 
             return Ok(brochure); // HTTP 204 - update success, no content returned
@@ -63,25 +67,25 @@ namespace brochureapi.Controllers
         [HttpGet("{id}")] 
         // requests a represnatation of the specified resources  only used to request data
         // ActionResult<Brochure> is used to specify the typre of data that the method is expected to return
-        public ActionResult<Brochure> GetById([FromRoute]int id)
+        public ActionResult<BrochureDTO> GetById([FromRoute]int id)
         {
-            var brochure = _repository.GetBrochureById(id); // the object  brochure
+            var brochure = _service.GetBrochureById(id); // the object  brochure
             if (brochure == null) return NotFound(); // if not found returns notfound
             return Ok(brochure); //else returns ok which returns succes code with json body reposnse
         }
     
         [HttpGet(Name = "GetBrochure")]
         // making   sure it returns a list of brochures 
-        public ActionResult<IEnumerable<Brochure>> Get()
+        public ActionResult<IEnumerable<BrochureDTO>> Get()
         {
-            var brochures = _repository.GetBrochures();
+            var brochures = _service.GetBrochures();
 
             return Ok(brochures);
         }
         [HttpGet("filter")]
-        public ActionResult<IEnumerable<Brochure>> GetByFilter([FromQuery]string inputName)
+        public ActionResult<IEnumerable<BrochureDTO>> GetByFilter([FromQuery]string inputName)
         {
-            var filtered = _repository.GetByFilter(inputName);
+            var filtered = _service.GetByFilter(inputName);
 
 
             return Ok(filtered);
@@ -89,10 +93,10 @@ namespace brochureapi.Controllers
         [HttpDelete]
         public ActionResult DeleteBrochure(int id)
         {
-            var brochure = _repository.GetBrochureById(id);
+            var brochure = _service.GetBrochureById(id);
             if (brochure == null) return NotFound($"Brochure with ID {id} not found.");
 
-            _repository.DeleteBrochure(id);
+            _service.DeleteBrochure(id);
             return NoContent(); 
         }
 

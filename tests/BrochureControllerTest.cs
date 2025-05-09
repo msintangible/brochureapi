@@ -8,17 +8,19 @@ using Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using System;
+using brochureapi.services;
+using brochureapi.NewFolder;
 namespace brochureapi.tests
 {
     public class BrochureControllerTest
     {
-        private readonly Mock<IBrochureRepository> _mockRepo;
+        private readonly Mock<IBrochureService> _mockRepo;
         private readonly Mock<ILogger<BrochureController>> _mockLogger;
         private readonly BrochureController _controller;
 
         public BrochureControllerTest()
         {
-            _mockRepo = new Mock<IBrochureRepository>();
+            _mockRepo = new Mock<IBrochureService>();
             _mockLogger = new Mock<ILogger<BrochureController>>();
             _controller = new BrochureController(_mockRepo.Object, _mockLogger.Object);
         }
@@ -28,7 +30,7 @@ namespace brochureapi.tests
         public void CreateTest()
         {
             //arranage
-            var brochure = new Brochure(5, "test6", DateOnly.FromDateTime(DateTime.Today));
+            var brochure = new BrochureDTO(5, "test6", DateOnly.FromDateTime(DateTime.Today));
 
             //act
             var result = _controller.Create(brochure);
@@ -41,7 +43,7 @@ namespace brochureapi.tests
         public void ControllerUpdateTest()
         {
             //arrange
-            var brochure = new Brochure(34, "test6", DateOnly.FromDateTime(DateTime.Today));
+            var brochure = new BrochureDTO(34, "test6", DateOnly.FromDateTime(DateTime.Today));
 
             _controller.Create(brochure);
 
@@ -53,7 +55,8 @@ namespace brochureapi.tests
             result.Should().BeOfType<OkObjectResult>();
 
 
-            var updatedBrochure = result.Value as Brochure;
+            var updatedBrochure = result.Value as BrochureDTO;
+            updatedBrochure.Should().BeOfType<BrochureDTO>();
             Assert.NotNull(updatedBrochure);
             Assert.Equal("newName", updatedBrochure.Name);
             Assert.Equal(34, updatedBrochure.Id);
@@ -63,22 +66,22 @@ namespace brochureapi.tests
         public void ControllerGetByIdTest()
         {
 
-            var brochure = new Brochure(45, "test35", DateOnly.FromDateTime(DateTime.Today));
+            var brochure = new BrochureDTO(45, "test35", DateOnly.FromDateTime(DateTime.Today));
 
             _controller.Create(brochure);
 
             var result = _controller.GetById(45);
 
             Assert.NotNull(result);
-            result.Should().BeOfType<ActionResult<Brochure>>();
+            result.Should().BeOfType<ActionResult<BrochureDTO>>();
             Assert.Equal(45, brochure.Id);
         }
         [Fact]
         public void ControllerGetAllTest()
         {
 
-            var brochure1 = new Brochure(77, "Firs3t", DateOnly.FromDateTime(DateTime.Today));
-            var brochure2 = new Brochure(88, "Seco4nd", DateOnly.FromDateTime(DateTime.Today));
+            var brochure1 = new BrochureDTO(77, "Firs3t", DateOnly.FromDateTime(DateTime.Today));
+            var brochure2 = new BrochureDTO(88, "Seco4nd", DateOnly.FromDateTime(DateTime.Today));
 
             Assert.NotNull(_controller.Create(brochure1));
             _controller.Create(brochure2);

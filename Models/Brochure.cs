@@ -3,6 +3,8 @@ namespace brochureapi.Models
 {
     public class Brochure
     {
+        
+
         public Brochure()
         {
              

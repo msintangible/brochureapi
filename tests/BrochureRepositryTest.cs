@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using brochureapi.DTOs;
 using brochureapi.EFCoreInMemoryDbDemo;
 using brochureapi.Models;
+using brochureapi.NewFolder;
 using brochureapi.repository;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 using Xunit;
 
 namespace brochureapi.tests
@@ -26,6 +30,17 @@ namespace brochureapi.tests
                 .Options;
             return new ApiContext(options);
         }
+        private IMapper CreateMapper()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Brochure, BrochureDTO>().ReverseMap();
+                cfg.CreateMap<Models.Page, PageDTO>().ReverseMap();
+            });
+
+            return config.CreateMapper();
+        }
+
         [Fact] // Marks  a method as a unit test
         public void AddBrochureTest()
         {
@@ -33,15 +48,17 @@ namespace brochureapi.tests
             //set up the DB
             //using implements IDisposable  which doees automatic disposes
             using var context = CreateContext();
-            var repo = new BrochureRepository(context); //instace  of the repoclass that takes in a db
+            var mapper = CreateMapper(); //create a mapper instance
+            var repo = new BrochureService(context,mapper); //instace  of the repoclass that takes in a db
                                                         //act
                                                         //created a brochure object ot be passed into the addbrochure and call getbrochures to return the brochure
-            var brochure = new Brochure(1, "test", DateOnly.FromDateTime(DateTime.Today));
+            var brochure = new BrochureDTO(1, "test", DateOnly.FromDateTime(DateTime.Today));
             repo.AddBrochure(brochure);
             var brochures = repo.GetBrochures();
 
             //assert
             Assert.Single(brochures);//only one is added so a single object should be returned
+            Assert.IsType<List<BrochureDTO>>(brochures);
             Assert.Equal("test", brochures[0].Name);//checking the first element in the lsit accessing the object and checking if the name attribute matches test
             Assert.Equal(1, brochures[0].Id);//same but iwth id ( the expected value, the actual value)
 
@@ -52,10 +69,11 @@ namespace brochureapi.tests
         {
             //Arranage
             using var context = CreateContext();
-            var repo = new BrochureRepository(context);
+            var mapper = CreateMapper(); //create a mapper instance
+            var repo = new BrochureService(context, mapper);
             //act
-            var brochure1 = new Brochure(4, "Brochure One", DateOnly.FromDateTime(DateTime.Today));
-            var brochure2 = new Brochure(3, "Brochure Two", DateOnly.FromDateTime(DateTime.Today.AddDays(1)));
+            var brochure1 = new BrochureDTO(4, "Brochure One", DateOnly.FromDateTime(DateTime.Today));
+            var brochure2 = new BrochureDTO(3, "Brochure Two", DateOnly.FromDateTime(DateTime.Today.AddDays(1)));
             repo.AddBrochure(brochure1);
             repo.AddBrochure(brochure2);
 
@@ -68,8 +86,9 @@ namespace brochureapi.tests
         {
             //Arrange
             using var context = CreateContext();
-            var repo = new BrochureRepository(context);
-            var brochure1 = new Brochure(33, "Brochure 33", DateOnly.FromDateTime(DateTime.Today));
+            var mapper = CreateMapper(); //create a mapper instance
+            var repo = new BrochureService(context, mapper);
+            var brochure1 = new BrochureDTO(33, "Brochure 33", DateOnly.FromDateTime(DateTime.Today));
             repo.AddBrochure(brochure1);
             //act 
             var result = repo.GetBrochures();
@@ -85,8 +104,9 @@ namespace brochureapi.tests
         {
             // Arrange
             using var context = CreateContext();
-            var repo = new BrochureRepository(context);
-            var brochure = new Brochure(21, "Specific Brochure", DateOnly.FromDateTime(DateTime.Today));
+            var mapper = CreateMapper(); //create a mapper instance
+            var repo = new BrochureService(context, mapper);
+            var brochure = new BrochureDTO(21, "Specific Brochure", DateOnly.FromDateTime(DateTime.Today));
             repo.AddBrochure(brochure);
 
             // Act
@@ -104,8 +124,9 @@ namespace brochureapi.tests
             // Arrange
             // set up the db the repochure created a  object to test then  pass it into the repo methods to test them
             using var context = CreateContext();
-            var repo = new BrochureRepository(context);
-            var brochure = new Brochure(22, "Old Name", DateOnly.FromDateTime(DateTime.Today));
+            var mapper = CreateMapper(); //create a mapper instance
+            var repo = new BrochureService(context, mapper);
+            var brochure = new BrochureDTO(22, "Old Name", DateOnly.FromDateTime(DateTime.Today));
             repo.AddBrochure(brochure);
 
             // Act
@@ -121,8 +142,9 @@ namespace brochureapi.tests
         {
             //Arrange
             using var context = CreateContext();
-            var repo = new BrochureRepository(context);
-            var brochure = new Brochure(22, "Old Name", DateOnly.FromDateTime(DateTime.Today));
+            var mapper = CreateMapper(); //create a mapper instance
+            var repo = new BrochureService(context, mapper);
+            var brochure = new BrochureDTO(22, "Old Name", DateOnly.FromDateTime(DateTime.Today));
             repo.AddBrochure(brochure);
             
             Assert.NotNull(repo.GetBrochureById(22));
@@ -135,14 +157,15 @@ namespace brochureapi.tests
         public void GetAllPagesFromBrochureTest() {
             //Arrange
             using var context = CreateContext();
-            var repo = new BrochureRepository(context);
-            var brochure = new Brochure(22, "Old Name", DateOnly.FromDateTime(DateTime.Today));
+            var mapper = CreateMapper(); //create a mapper instance
+            var repo = new BrochureService(context, mapper);
+            var brochure = new BrochureDTO(22, "Old Name", DateOnly.FromDateTime(DateTime.Today));
             repo.AddBrochure(brochure);
 
             var result = repo.GetAllPages(22);
 
             Assert.NotNull(result);
-            result.Should().BeOfType<List<Page>>();
+            result.Should().BeOfType<List<PageDTO>>();
 
         }
         [Fact]
@@ -150,18 +173,19 @@ namespace brochureapi.tests
         {
             // Arrange
             using var context = CreateContext();
-            var repo = new BrochureRepository(context);
-            var brochure = new Brochure { Id = 1, Name = "Test Brochure" };
+            var mapper = CreateMapper(); //create a mapper instance
+            var repo = new BrochureService(context, mapper);
+            var brochure = new BrochureDTO(22, "Old Name", DateOnly.FromDateTime(DateTime.Today)); ;
             repo.AddBrochure(brochure);
 
             // Add pages to brochure
-            var page1 = new Page { Name = "Page 1" };
-            var page2 = new Page { Name = "Page 2" };
-            repo.AddPage(1, page1);
-            repo.AddPage(1, page2);
+            var page1 = new PageDTO { Name = "Page 1" };
+            var page2 = new PageDTO { Name = "Page 2" };
+            repo.AddPage(22, page1);
+            repo.AddPage(22, page2);
 
             // Act
-            var result = repo.GetAllPages(1);
+            var result = repo.GetAllPages(22);
 
             // Assert
             Assert.NotNull(result);

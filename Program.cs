@@ -1,5 +1,7 @@
 using brochureapi.EFCoreInMemoryDbDemo;
+using brochureapi.Mappings;
 using brochureapi.repository; // If you have your repositories in a folder
+using brochureapi.services;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -10,6 +12,10 @@ builder.Logging.AddConsole();
 // Register In-Memory DbContext for Brochure
 builder.Services.AddDbContext<ApiContext>(options =>
     options.UseInMemoryDatabase("brochureDb"));
+builder.Services.AddAutoMapper(typeof(Mapper));
+//// Register Brochure Repository
+builder.Services.AddScoped<IBrochureService, BrochureService>();
+builder.Services.AddScoped<IBrochurePageService, BrochurePageService>();
 
 
 builder.Services.AddControllers();

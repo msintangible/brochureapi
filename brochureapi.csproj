@@ -9,7 +9,9 @@
 
 	<ItemGroup>
 		<!-- Test SDK -->
+		<PackageReference Include="AutoMapper" Version="14.0.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+		<PackageReference Include="NEST" Version="7.17.5" />
 
 		<!-- Test Framework -->
 		<PackageReference Include="xunit" Version="2.9.3" />
